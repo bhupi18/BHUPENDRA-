@@ -1,0 +1,55 @@
+file:///H:/Lecture/Forecasting Rainfall.Rmd---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+install.packages("ggplot2") # install the packages
+install.packages("tseries")
+install.packages("forecast")
+
+library ('ggplot2') # calls the packages 
+library ('forecast')
+library ('tseries')
+
+x=read.csv(file.choose(), header=T) # select/call the data in comma seperated variable type
+
+AP=ts (x [, 3], start=c (1951, 1), end = c (2016, 12), frequency = 12)
+
+View(AP)
+
+adf.test(AP, alternative= c("stationary", "explosive"))
+
+summary(AP)
+
+plot (AP, xlab='year', ylab = 'Rainfall', main="Monthly mean Rainfall of Andhra Pradesh", col="blue")
+
+Decom = decompose (AP) # to check the decomposition of the data
+plot (Decom, col='red')
+
+acf(ts(AP), main= 'ACF of Mean rainfall', col = "red")
+pacf(ts(AP), main= 'PACF of Mean rainfall', col = "red")
+
+y=auto.arima(AP, approximation = F, trace = F)
+y
+
+forecast(y, h=60)
+plot (forecast(y, h=60), xlab='year', ylab = 'Rainfall', col="red")
+
+
+plot (diff (AP), main="Rainfall difference in Andhra Pradesh", ylab='Differenced Rainfall', col="red") #Forecasting for Seasonal Differences
+
+acf(ts(diff(AP)), main = 'ACF of Rainfall differences', col = "blue")
+pacf(ts(diff(AP)), main = 'PACF of Rainfall differences', col = "blue")
+
+z = auto.arima(diff(AP), approximation = F, trace = F)
+z
+
+forecast(z, h=60) # display the forecast values
+
+plot(forecast(z, h=60), xlab='year', ylab = 'Rainfall', col="red")
+
+arima(x = AP, order = c(5, 0, 0), seasonal = list(order = c(1, 0, 0), period = 12),method = "ML") # check the individual model
